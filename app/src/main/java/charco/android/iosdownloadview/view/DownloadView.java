@@ -67,6 +67,7 @@ public class DownloadView extends View {
         mLayerPaint.setAntiAlias(true);
         mLayerPaint.setColor(getResources().getColor(R.color.layer));
         mLayerPaint.setStyle(Paint.Style.STROKE);
+        //将画笔半径设置为view宽度减去100，这样就可以在中心留100的位置绘制其他东西
         mLayerPaint.setStrokeWidth(mBgBitmap.getWidth() - 100);
 
         //绘制内圈扇形
@@ -75,6 +76,7 @@ public class DownloadView extends View {
         mArcPaint.setColor(getResources().getColor(R.color.layer));
         mArcPaint.setStyle(Paint.Style.FILL);
         mArcPaint.setStrokeWidth(10);
+        //进度扇形的矩形边框位置设置为中心点－45，这样就和外圆环有5个像素点的间隔
         mArcRectF =  new RectF(mBgBitmap.getWidth()/2-45,mBgBitmap.getHeight()/2-45,
                 mBgBitmap.getWidth()/2+45,mBgBitmap.getHeight()/2+45);
 
@@ -102,7 +104,9 @@ public class DownloadView extends View {
                 pointSize += 10;
                 invalidate();
             }else {
-                //圆点动画执行完成则剪切出 缕空暂停 的效果
+                //圆点动画执行完成则剪切出 缕空暂停 的效果，剪切效果只对后面的绘制产生影响
+                //相关知识 https://blog.csdn.net/eyishion/article/details/53728913
+                //        http://hencoder.com/ui-1-4/
                 canvas.clipRect(getWidth()/2-20,getHeight()/2-10,getWidth()/2-10,getHeight()/2+10,
                 Region.Op.DIFFERENCE);
 
@@ -131,7 +135,7 @@ public class DownloadView extends View {
 
         }
 
-        if (percent < 100){//如果进度还没完成，画内部大扇形
+        if (percent < 100){//如果进度还没完成，画内部进度扇形
             //画内圈扇形
             canvas.drawArc(mArcRectF,-90+percent*360/100,360-percent*360/100,true,mArcPaint);
 
@@ -192,6 +196,7 @@ public class DownloadView extends View {
         invalidate();
     }
 
+    //设置控件大小为icon大小
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         setMeasuredDimension(mBgBitmap.getWidth(),mBgBitmap.getHeight());
